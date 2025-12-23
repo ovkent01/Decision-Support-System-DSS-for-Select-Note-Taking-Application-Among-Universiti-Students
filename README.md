@@ -62,4 +62,40 @@ This project uses `uv` for fast package management and environment isolation.
 ```bash
 git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
 cd your-repo-name
+```
 
+### Step 2: Sync Dependencies
+Initialize the environment and install dependencies defined in `pyproject.toml` using `uv`.
+
+```bash
+uv sync
+```
+
+### Step 3: Run the Application
+Use `uv run` to launch the Streamlit app within the managed environment.
+
+```Bash
+uv run streamlit run app.py
+```
+The application will launch in your default web browser at http://localhost:8501.
+
+## 📊 Features
+1. Interactive Criteria Weighting: Users can input or adjust the importance of each criterion (e.g., prioritizing "Cost" over "Functionality").
+2. Dynamic Ranking: The system calculates scores in real-time using Python (Pandas/NumPy) and updates the rank of alternatives.
+3. Visual Analytics:
+* Bar Charts (Matplotlib): Comparison of scores per app.
+* Radar Charts (Plotly): To visualize the strengths and weaknesses of the top-ranked app.
+4. Detailed Comparison Table: A comprehensive view of the data matrix used for decision-making.
+
+## 📂 Project Structure
+```Bash
+├── main.py                                                                 # Main Streamlit Logic file
+├── dashboard.py                                                            # Dashboard algorithm file
+├── home.py                                                                 # Home page file (criteria setting and recommendation ranking)
+├── datacleanning.py                                                        # Algorithm of cleanning data from Form responses 1.csv
+├── pyproject.toml                                                          # Project metadata and dependencies (managed by uv)
+├── uv.lock                                                                 # Lock file for exact dependency versions
+├── README.md                                                               # Project documentation
+├── Note-Taking Application Selection (Responses) - Form responses 1.csv    # Responses csv from Google Form
+└── average_matrix_result.csv                                               # File Generate by datacleanning.py after processing raw data from Form responses 1.csv
+```
