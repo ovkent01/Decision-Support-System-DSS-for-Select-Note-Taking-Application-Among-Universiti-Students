@@ -3,7 +3,7 @@
 [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)](https://streamlit.io/)
 [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![UUM](https://img.shields.io/badge/Universiti_Utara_Malaysia-162B4E?style=for-the-badge&logoColor=white)](http://www.uum.edu.my/)
-[![uv](https://img.shields.io/badge/uv-managed-purple?style=for-the-badge)](https://github.com/astral-sh/uv)
+[![uv](https://img.shields.io/badge/uv-managed-purple?style=for-the-badge)](https://docs.astral.sh/uv/)
 
 ## 📖 Project Overview
 
@@ -62,3 +62,4 @@ This project uses `uv` for fast package management and environment isolation.
 ```bash
 git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
 cd your-repo-name
+
