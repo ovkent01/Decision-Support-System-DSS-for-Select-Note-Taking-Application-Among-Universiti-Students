@@ -13,7 +13,7 @@ def render_home_page():
     Please set your preferences in slidebar at left side.
     """)
     
-    # --- 1. 定义数据 ---
+    # --- 1. define data ---
     criteria = [
         "Ease of Use",
         "Functionality",
@@ -31,7 +31,6 @@ def render_home_page():
     ]
 
     # --- 2. Slidebar ---
-    # 注意：这里直接写 st.sidebar 即可，它会自动挂载到主程序的侧边栏
     with st.sidebar:
         st.header("🎯 Your Preferences Setting")
         st.info("Please drag the slider to set the importance of each criteria for you. (0-10)")
@@ -42,7 +41,7 @@ def render_home_page():
 
         calc_btn = st.button("Start", type="primary")
 
-    # --- 3. 计算逻辑 ---
+    # --- 3. Algorithm Logic ---
     if calc_btn or True:
         total_score = sum(raw_weights.values())
         
@@ -52,10 +51,10 @@ def render_home_page():
 
         normalized_weights = {k: v / total_score for k, v in raw_weights.items()}
         
-        # 显示权重分布
-        st.subheader("1. 您的权重分析")
-        weights_df = pd.DataFrame(list(normalized_weights.items()), columns=["准则", "权重"])
-        st.bar_chart(weights_df.set_index("准则"))
+        # 显示权重分布show weight distribution
+        st.subheader("1. Your preference weightages")
+        weights_df = pd.DataFrame(list(normalized_weights.items()), columns=["criteria", "weight"])
+        st.bar_chart(weights_df.set_index("criteria"))
 
         # ---------------------------------------------------------
         # 替换部分：尝试读取真实 CSV 数据
@@ -74,22 +73,26 @@ def render_home_page():
             performance_df = matrix_df.T
             
         except FileNotFoundError:
-            st.error("⚠️ 未找到 'average_matrix_result.csv' 文件。请先运行数据清洗脚本生成该文件。")
+            st.error("⚠️ Can't found 'average_matrix_result.csv' file. Please run datacleanning.py file to generate this file.")
             st.stop() # 停止运行，防止后续报错
         
         # 计算
         weight_vector = [normalized_weights[c] for c in criteria]
         final_scores = performance_df.dot(weight_vector)
-        results_df = pd.DataFrame(final_scores, columns=["综合得分"]).sort_values(by="综合得分", ascending=False)
+        results_df = pd.DataFrame(final_scores, columns=["Overall Point"]).sort_values(by="Overall Point", ascending=False)
         
+        st.markdown("""
+            Please scroll down to view the result."""
+            )
+
         # 显示结果
         st.markdown("---")
-        st.subheader("🏆 推荐结果排名")
+        st.subheader("🏆 Recommendation Ranking")
         
         col1, col2 = st.columns([2, 1])
         with col1:
             st.bar_chart(results_df)
         with col2:
             winner = results_df.index[0]
-            st.success(f"推荐首选：\n\n### **{winner}**")
+            st.success(f"Recommend First Choice：\n\n### **{winner}**")
             st.dataframe(results_df.style.format("{:.2f}"))
