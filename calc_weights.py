@@ -3,10 +3,10 @@ import numpy as np
 from scipy.stats import gmean
 
 def calculate_ahp_weights(file_path):
-    # 1. 读取数据
+    # 1. read data
     df = pd.read_csv(file_path)
 
-    # 2. 定义准则顺序 (必须与你 home.py 中的顺序完全一致)
+    # 2. 定义准则顺序 (必须与你 home.py 中的顺序完全一致) define criteria(must same arrangement with home.py)
     criteria = [
         "Ease of Use",
         "Functionality",
@@ -16,6 +16,7 @@ def calculate_ahp_weights(file_path):
     ]
     
     # 建立名称映射 (处理 CSV 中可能的大小写不一致, 如 'Ease of use')
+    # make all word same, prevent error
     name_map = {
         "Ease of use": "Ease of Use",
         "Ease of Use": "Ease of Use",
@@ -85,11 +86,11 @@ def calculate_ahp_weights(file_path):
     weights = np.real(eigvecs[:, max_idx])
     weights = weights / weights.sum() # 归一化
 
-    # 返回字典格式
+    # 返回字典格式 return dictionary
     return dict(zip(criteria, weights))
 
 if __name__ == "__main__":
-    # 测试运行
+    # test run
     file = 'Note-Taking Application Selection (Responses) - Form responses 1.csv'
     weights = calculate_ahp_weights(file)
     print("--- 计算出的 AHP 权重 ---")
