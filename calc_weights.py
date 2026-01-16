@@ -6,7 +6,7 @@ def calculate_ahp_weights(file_path):
     # 1. read data
     df = pd.read_csv(file_path)
 
-    # 2. 定义准则顺序 (必须与你 home.py 中的顺序完全一致) define criteria(must same arrangement with home.py)
+    # 2. define criteria (must be the same arrangement as home.py)
     criteria = [
         "Ease of Use",
         "Functionality",
@@ -14,9 +14,8 @@ def calculate_ahp_weights(file_path):
         "Cost",
         "Storage & Security"
     ]
-    
-    # 建立名称映射 (处理 CSV 中可能的大小写不一致, 如 'Ease of use')
-    # make all word same, prevent error
+
+    # Standardize all words to prevent errors
     name_map = {
         "Ease of use": "Ease of Use",
         "Ease of Use": "Ease of Use",
@@ -29,14 +28,14 @@ def calculate_ahp_weights(file_path):
     n = len(criteria)
     criteria_idx = {c: i for i, c in enumerate(criteria)}
 
-    # 3. 定义 10 组对比题目对应的列索引 (基于对你 CSV 的分析)
-    # 每一组是 (Winner_Column_String, Intensity_Column_String) 的包含关键字
-    # 我们通过遍历找到对应的列
+    # 3. Define column indices for the 10 comparison questions (based on your CSV analysis)
+    # Each group searches for keywords (Winner_Column_String, Intensity_Column_String)
+    # We iterate to find the corresponding columns
     q_cols = [c for c in df.columns if "Which is more important" in c]
     i_cols = [c for c in df.columns if "how much more important" in c]
 
-    # 手动定义题目对应的准则对索引 (A_index, B_index)
-    # 顺序对应 Q1 到 Q10
+    # Manually define the criteria pair indices (A_index, B_index) corresponding to the questions
+    # The order corresponds to Q1 to Q10
     pairs = [
         (0, 1), # Q1: Ease vs Func
         (0, 2), # Q2: Ease vs Sync
@@ -50,49 +49,49 @@ def calculate_ahp_weights(file_path):
         (3, 4)  # Q10: Cost vs Storage
     ]
 
-    # 4. 构建每个受访者的矩阵
+    # 4. Construct the matrix for each respondent
     num_respondents = len(df)
     all_matrices = np.zeros((num_respondents, n, n))
 
     for r in range(num_respondents):
-        mat = np.eye(n) # 初始化单位矩阵
+        mat = np.eye(n) # Initialize identity matrix
         row = df.iloc[r]
         
         for q_idx, (idx_a, idx_b) in enumerate(pairs):
             winner_raw = str(row[q_cols[q_idx]]).strip()
             intensity = float(row[i_cols[q_idx]])
             
-            # 映射标准名称
+            # Map to standard criteria name
             winner_clean = name_map.get(winner_raw)
             
             if winner_clean:
                 winner_idx = criteria_idx[winner_clean]
                 
-                # 确定输家
+                # Determine the loser index
                 loser_idx = idx_b if winner_idx == idx_a else idx_a
                 
-                # 填入矩阵
+                # Populate the matrix
                 mat[winner_idx, loser_idx] = intensity
                 mat[loser_idx, winner_idx] = 1.0 / intensity
         
         all_matrices[r] = mat
 
-    # 5. 群决策聚合：计算所有矩阵的几何平均值 (Consensus Matrix)
+    # 5. Group Decision Aggregation: Calculate the geometric mean of all matrices (Consensus Matrix)
     consensus_matrix = gmean(all_matrices, axis=0)
 
-    # 6. 计算权重 (特征向量法)
+    # 6. Calculate weights (Eigenvector Method)
     eigvals, eigvecs = np.linalg.eig(consensus_matrix)
     max_idx = np.argmax(np.real(eigvals))
     weights = np.real(eigvecs[:, max_idx])
-    weights = weights / weights.sum() # 归一化
+    weights = weights / weights.sum() # Normalize
 
-    # 返回字典格式 return dictionary
+    # Return dictionary format
     return dict(zip(criteria, weights))
 
 if __name__ == "__main__":
     # test run
     file = 'Note-Taking Application Selection (Responses) - Form responses 1.csv'
     weights = calculate_ahp_weights(file)
-    print("--- 计算出的 AHP 权重 ---")
+    print("--- Calculated AHP Weights ---")
     for k, v in weights.items():
         print(f"{k}: {v:.4f}")
